@@ -1,0 +1,38 @@
+emp_details = LOAD '/home/acadgild/Desktop/data/employee_details.txt' USING PigStorage(',') AS (id:int, name:chararray, salary:int, rating:int);
+
+emp_expenses = LOAD '/home/acadgild/Desktop/data/employee_expenses.txt' USING PigStorage('\t') AS (id:int, expenses:int);
+
+1.
+emp_order = order emp_details by rating desc, name asc;
+lim = limit emp_order 5;
+emp = foreach lim generate id, name;
+dump emp;
+
+2.
+emp_fil = filter emp_details by (id % 2) != 0;
+emp1_order = order emp_fil by salary desc;
+lim1 = limit emp1_order 3;
+emp1 = foreach lim1 generate id, name;
+dump emp1;
+
+3.
+emp_join = join emp_details by id, emp_expenses by id;
+emp2_order = order emp_join by expenses desc, name asc;
+lim2 = limit emp2_order 1;
+emp2 = foreach lim2 generate $0,$1;
+dump emp2;
+
+4.
+emp_join1 = join emp_details by id, emp_expenses by id;
+emp3 = foreach emp_join1 generate $0,$1;
+dist = distinct emp3;
+dump dist;
+
+5.
+emp_join2 = join emp_details by id left outer, emp_expenses by id;
+emp4_fil = filter emp_join2 by $4 is null and $5 is null;
+emp4 = foreach emp4_fil generate $0,$1;
+dist1 = distinct emp4;
+dump dist1;
+
+
